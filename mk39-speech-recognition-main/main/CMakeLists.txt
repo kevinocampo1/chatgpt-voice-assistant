@@ -4,8 +4,6 @@ set(srcs
 
 set(requires
     hardware_driver
-    servo_im
-    led_im
     )
 
 idf_component_register(SRCS ${srcs}
