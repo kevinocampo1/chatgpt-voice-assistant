@@ -27,7 +27,6 @@
 #include <string.h>
 
 // specific includes for iron man suit control
-#include "led_im.h"
 
 static const char *TAG = "MK39 Master Control";
 
@@ -91,8 +90,7 @@ void detect_Task(void *arg)
         if (res->wakeup_state == WAKENET_DETECTED) {
             printf("WAKEWORD DETECTED\n");
             multinet->clean(model_data);
-            //custom task to process chest reactor LEDs
-            xTaskCreatePinnedToCore(&led_process, "led", 8 * 1024, NULL, 5, NULL, 1);	    
+              
         } else if (res->wakeup_state == WAKENET_CHANNEL_VERIFIED) {
             play_voice = -1;
             detect_flag = 1;
@@ -119,33 +117,16 @@ void detect_Task(void *arg)
                     switch (mn_result->command_id[0])
                     {
                         case 0:
-                            //open helmet
-                            helmet_open();
                             detect_flag = 2;
                             printf("Open Sequence\n");
-                            //allow time for helmet to open
-                            vTaskDelay(50 / portTICK_PERIOD_MS);
-                            led_eye_control(0);
-                            //change reactor and jetpack color to yellow
-                            led_color(50, 50, 0);
                             break;
                         
                         case 1:
-                            //hulk out
-                            //change reactor and jetpack color to green
-                            led_color(100, 0, 0);
                             break;
 
                         case 2:
-                            //close helmet
-                            helmet_close();
                             detect_flag = 2;
                             printf("Close Sequence\n");
-                            //allow time for helmet to close
-                            vTaskDelay(50 / portTICK_PERIOD_MS);
-                            led_eye_control(1);
-                            //change reactor and jetpack color to blue
-                            led_color(0, 0, 100);
                             break;
 
                         default:
@@ -177,14 +158,10 @@ void detect_Task(void *arg)
 
 void app_main()
 {
-    led_set();
 
     models = esp_srmodel_init("model"); // partition label defined in partitions.csv
     ESP_ERROR_CHECK(esp_board_init(AUDIO_HAL_16K_SAMPLES, 1, 16));
     // ESP_ERROR_CHECK(esp_sdcard_init("/sdcard", 10));
-#if defined CONFIG_ESP32_KORVO_V1_1_BOARD
-    led_init();
-#endif
 
 #if CONFIG_IDF_TARGET_ESP32
     printf("This demo only support ESP32S3\n");
