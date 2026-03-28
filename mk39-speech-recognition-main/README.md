@@ -1,8 +1,7 @@
-# MK39 Offline Voice Command Control System
-![MK39](assets/cover.jpg)
+# CHATGPT-VOICE-ASSISTANT
+
 ## Overview
 
-For video instructions on using this repository, kindly check out my YouTube channel where I will post tutorials and other information on various project.
 
 [YouTube Channel](https://www.youtube.com/@KishSan) \
 [Link to Instructional Video](https://www.youtube.com/watch?v=_AuPDKQoaPo)
@@ -14,24 +13,13 @@ This repository contains code build off the ESP-SKAINET framework which was desi
  * ESP32-S3-EYE
  * ESP32-P4-Function-EV
 
-The purpose of this repo is to start with a simplified speech recognition framework that will be easy to update and add future functionality. The features and concepts included here are meant to be used across various robotics projects.
-
-The GitHub repository for the official framework can be found here:
-* [ESP-Skainet Framework](https://github.com/espressif/esp-skainet)
-
-Modifications were needed to the framework to work with DevKit modules. Special thanks to Eric for this repository that enables us to work with the DevKit modules:
-* [ESP-Skainet framework modification for ESP32-S3 DevKitC](https://github.com/0015/esp-skainet/tree/ESP32-S3-Devkit-C)
-
 Due to the nature of the project, the framework was stripped down to only contain necessary modules for this application. Features including:
 * English speech recognition
-* Servo control using LEDC (8 channels)
-    * MCPWM implementation has been removed but can be used for additional channels if needed.
-* Addressable LED control using RMT drivers
 
-The final revision of this code base was tested on both the ESP32-S3 N8R8 and ESP32-S3 N16R8 modules. Different variations will need to be configured in the SDK using the menuconfig option.
+The final revision of this code base was tested on ESP32-S3 N16R8 module. Different variations will need to be configured in the SDK using the menuconfig option.
 
 ## Included Demo Features
-The system will boot, awaiting an activation command. This repo has been pre-configured for 'JARVIS' as the activation command. Multiple activation commands can be set as well to use various wake words for system control.
+The system will boot, awaiting an activation command. This repo has been pre-configured for 'JARVIS' and 'Hi, ESP' as the activation commands. Multiple activation commands can be set to use various wake words for system control.
 
 ![Activation](assets/start.png)
 
@@ -39,24 +27,10 @@ If no command is issued within a certain time, a timeout will occur and return t
 
 ![Timeout](assets/timeout.png)
 
-Example sequences are displayed for Opening and Closing the helmet. Phrases are matched based on various probabilities so similar words may cause conflicts.
-
-![Open](assets/open.png)
-
-![Close](assets/close.png)
-
 ## Additional Hardware Required
 
 * INMP 441 MEMS Microphone
     * This addition is required for the speech input when using the DevKit modules
-
-## Default GPIO Configuration
-```
-Helmet Servo 1      - GPIO 4
-Helmet Servo 2      - GPIO 5
-Eye LED             - GPIO 38
-Addressable LEDs    - GPIO 21
-```
 
 ### Configuring the GPIOs for the INMP Module
 * Navigate to the folder:
@@ -66,7 +40,7 @@ Addressable LEDs    - GPIO 21
 
 ```
 /**
- * @brief ESP32-S3-DEVKIT-C I2S GPIO defination
+ * @brief ESP32-S3-DEVKIT-C I2S GPIO definition
  * 
  */
 #define FUNC_I2S_EN         (1)
@@ -78,7 +52,7 @@ Addressable LEDs    - GPIO 21
 ```
 
 ## Setting up the ESP-IDF environment
-Development for this project was done with the ESP-IDF extension in VSCode. It was developed to support up to ESP-IDF v5.4. There is also a side branch with older v5.0.8 support.
+Development for this project was done with the ESP-IDF extension in VSCode. It was developed to support up to ESP-IDF v5.5.3.
 
 Further details on setting up the IDF environment can be found here and is outside the scope of this documentation.
 * [ESP-IDF Guide](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html)
@@ -106,11 +80,9 @@ idf.py set-target esp32s3
 
 The sdkconfig file contains the following command activations and phrases:
 
-* Activation: Jarvis (wn9_jarvis_tts)
-* Commmands (not case-sensitive):
-    * Wake Up (WdK cP)
-    * Hulk Out (hcLK tT)
-    * Let's Go (LfTS Gb)
+* For Wake Words:
+    * CONFIG_SR_WN_WN9_HIESP=y
+    * CONFIG_SR_WN_WN9_JARVIS_TTS=y
 
 Manual SDK changes can be done through menuconfig:
 ```
@@ -177,7 +149,7 @@ For this project, the ESP-SR has been included as a managed component. To add fu
 ```
 main\idf_component.yml
 ```
-The current version of ESP-SR in this build is v2.0.0 which brings several improvements to the AFE and adds additional features such as noise supression.
+The current version of ESP-SR in this build is v2.4.0 which brings several improvements to the AFE and adds additional features such as noise supression.
 
 Note that the v2 AFE interface is not compatible with ESP-SR versions 1.x.x. The migration procedure has been implemented in this build so you will only be able to use v2.x.x
 
